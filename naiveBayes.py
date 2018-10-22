@@ -223,10 +223,7 @@ def applyNBStopwords(hPrior, sPrior, condProbHam, condProbSpam, hSmooth, sSmooth
     return (correct/totalFiles)
 
 
-def logisticRegression():
-    0
-
-def main(): #todo uncomment to make a real main
+def main():
     condProbHam, condProbSpam, hPrior, sPrior, hSmooth, sSmooth = TrainNB()
     nbC = applyNB(hPrior, sPrior, condProbHam, condProbSpam, hSmooth, sSmooth)
     print("NB correctness: ")
@@ -236,5 +233,5 @@ def main(): #todo uncomment to make a real main
     print("NB correctness w/o stopwords: ")
     print(nbC)
 
-if __name__== "__main__": #todo uncomment to make a real main
+if __name__== "__main__":
   main()

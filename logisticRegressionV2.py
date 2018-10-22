@@ -98,6 +98,57 @@ def createDictionaryStopwords():
                     count += 1
     return hDic, sDic
 
+# def createDictionaryTest():
+#     hDic = {}
+#     count = 0
+#     for filename in os.listdir('test\\ham'):
+#         if filename.endswith(".txt"):
+#             f = open('test\\ham\\'+filename)
+#             lines = [word for sent in sent_tokenize(f.read()) for word in word_tokenize(sent) if word.isalnum()]
+#             for word in lines:
+#                 word = word.lower()
+#                 if word not in hDic:
+#                     hDic[word] = count
+#                     count += 1
+#     sDic = {}
+#     count = 0
+#     for filename in os.listdir('test\\spam'):
+#         if filename.endswith(".txt"):
+#             f = open('test\\spam\\'+filename)
+#             lines = [word for sent in sent_tokenize(f.read()) for word in word_tokenize(sent) if word.isalnum()]
+#             for word in lines:
+#                 word = word.lower()
+#                 if word not in sDic:
+#                     sDic[word] = count
+#                     count += 1
+#     return hDic, sDic
+
+
+# def vectorize(hDic, sDic):
+#     hVectors = []
+#     for filename in os.listdir('train\\ham'):
+#         if filename.endswith(".txt"):
+#             vector = [0] * len(hDic)
+#             f = open('train\\ham\\'+filename)
+#             lines = [word for sent in sent_tokenize(f.read()) for word in word_tokenize(sent) if word.isalnum()]
+#             for word in lines:
+#                 word = word.lower()
+#                 index = hDic[word]
+#                 vector[index] += 1
+#             hVectors.append(vector)
+#     sVectors = []
+#     for filename in os.listdir('train\\spam'):
+#         if filename.endswith(".txt"):
+#             vector = [0] * len(sDic)
+#             f = open('train\\spam\\'+filename)
+#             lines = [word for sent in sent_tokenize(f.read()) for word in word_tokenize(sent) if word.isalnum()]
+#             for word in lines:
+#                 word = word.lower()
+#                 index = sDic[word]
+#                 vector[index] += 1
+#             sVectors.append(vector)
+#     return np.array(hVectors, sVectors)
+
 
 def vectorize(hDic, sDic):
     vectors = []
@@ -215,7 +266,11 @@ def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
 
-def train(X, y, num_iter, lr, lbda):
+def loss(h, y):
+    return (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()
+
+
+def train(X,y, num_iter, lr, lbda):
     theta = np.zeros(X.shape[1])
 
     for i in range(num_iter):
@@ -223,10 +278,15 @@ def train(X, y, num_iter, lr, lbda):
         h = sigmoid(z)
         gradient = np.dot(X.T, (h - y)) / len(y)
         theta -= lr * gradient + (lbda * lr * theta)
+
+        z = np.dot(X, theta)
+        h = sigmoid(z)
+        #lossV = loss(h, y)
     return theta
 
 
 def predict(X, theta):
+    #X = addIntercept(X)
     prob = sigmoid(np.dot(X, theta))
     return prob >= .5
 
@@ -242,7 +302,7 @@ def evaluate(testX, testY, theta):
         if y == yPredicted[i]:
             correct += 1
     total = yPredicted.size
-    return correct / total
+    return (correct/total)
 
 
 
